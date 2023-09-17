@@ -13,16 +13,23 @@ import { JWT_SECRET } from './constants/jwt';
 import { LicenseKeyActivation } from './entities/license-key-activation.entity';
 import { AuthController } from './auth/auth.controller';
 import { ApiKeyService } from './auth/api-key.service';
+import {
+  DB_DATABASE,
+  DB_HOST,
+  DB_PASSWORD,
+  DB_PORT,
+  DB_USERNAME,
+} from './constants/db';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'default',
-      password: 'secret',
-      database: 'roktitlelicensedev1',
+      host: DB_HOST,
+      port: DB_PORT,
+      username: DB_USERNAME,
+      password: DB_PASSWORD,
+      database: DB_DATABASE,
       entities: [Kingdom, LicenseKey, LicenseKeyActivation],
       synchronize: false,
     }),
