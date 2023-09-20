@@ -27,9 +27,7 @@ export class LicenseKeyController {
 
     const result = await this.licenseKeyService.authentication(licenseKey);
 
-    res.status(HttpStatus.OK).json({
-      expired_after: result,
-    });
+    res.status(HttpStatus.OK).json(result);
   }
 
   @Post('activation')

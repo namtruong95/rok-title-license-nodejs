@@ -41,13 +41,17 @@ export class LicenseKeyService {
         latest_active_at: moment().toDate(),
       },
     );
+
     const expiredAt = moment(licenseKeyActivation.expired_at);
     const now = moment();
 
     const days = expiredAt.diff(now, 'days');
     const hours = expiredAt.subtract(days, 'days').diff(now, 'hours');
 
-    return { days, hours };
+    return {
+      expired_after: { days, hours },
+      number_of_scan_process: licenseKey.number_of_scan_process,
+    };
   }
 
   async activationLicenseKey(activationDto: ActivationDto) {
@@ -71,7 +75,8 @@ export class LicenseKeyService {
     const token = await this.jwtService.signAsync(
       {
         sub: licenseKey.id,
-        kingdom_id: licenseKey.kingdom_id,
+        kingdom: licenseKey.kingdom_id,
+        number_of_scan_process: licenseKey.number_of_scan_process,
       },
       jwtOptions,
     );
@@ -137,6 +142,7 @@ export class LicenseKeyService {
     const licenseKey = await this.licenseKeyRepository.save({
       kingdom_id: kingdom.id,
       ttl: createLicenseKeyDto.ttl,
+      number_of_scan_process: createLicenseKeyDto.number_of_scan_process,
       created_at: moment().toDate(),
       key: random(49),
     });

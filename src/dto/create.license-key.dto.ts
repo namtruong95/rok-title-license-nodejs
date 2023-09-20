@@ -7,4 +7,8 @@ export class CreateLicenseKeyDto {
   @IsNotEmpty()
   @Min(1)
   ttl: number;
+
+  @IsNotEmpty()
+  @Min(2)
+  number_of_scan_process: number;
 }

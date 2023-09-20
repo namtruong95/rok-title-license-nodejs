@@ -16,6 +16,9 @@ export class LicenseKey {
   @Column()
   ttl: number;
 
+  @Column()
+  number_of_scan_process: number;
+
   @Column({ type: 'timestamp' })
   activated_at: Date;
 
