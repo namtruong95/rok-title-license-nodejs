@@ -4,6 +4,7 @@ import {
   Get,
   HttpStatus,
   Post,
+  Query,
   Request,
   Res,
   UseGuards,
@@ -15,6 +16,7 @@ import { LicenseKeyGuard } from './license-key.guard';
 import { LicenseKey } from 'src/entities/license-key.entity';
 import { AdminGuard } from 'src/guards/admin.guard';
 import { CreateLicenseKeyDto } from 'src/dto/create.license-key.dto';
+import { ListLicenseKeyDto } from 'src/dto/list.license-key.dto';
 
 @Controller('api/license-key')
 export class LicenseKeyController {
@@ -52,5 +54,17 @@ export class LicenseKeyController {
     res.status(HttpStatus.CREATED).json({
       key: result,
     });
+  }
+
+  @UseGuards(AdminGuard)
+  @Get('list')
+  async listLicenseKey(
+    @Query() listLicenseKeyDto: ListLicenseKeyDto,
+    @Res() res: Response,
+  ) {
+    const result =
+      await this.licenseKeyService.listLicenseKey(listLicenseKeyDto);
+
+    res.status(HttpStatus.OK).json(result);
   }
 }

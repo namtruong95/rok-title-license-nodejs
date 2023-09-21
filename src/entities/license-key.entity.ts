@@ -5,9 +5,7 @@ export class LicenseKey {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
-  @Column({
-    name: 'kingdom_id',
-  })
+  @Column()
   kingdom_id: number;
 
   @Column()

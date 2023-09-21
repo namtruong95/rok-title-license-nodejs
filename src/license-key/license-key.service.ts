@@ -5,6 +5,7 @@ import * as moment from 'moment';
 import { JWT_ISS } from 'src/constants/jwt';
 import { ActivationDto } from 'src/dto/activation.dto';
 import { CreateLicenseKeyDto } from 'src/dto/create.license-key.dto';
+import { ListLicenseKeyDto } from 'src/dto/list.license-key.dto';
 import { Kingdom } from 'src/entities/kingdom.entity';
 import { LicenseKeyActivation } from 'src/entities/license-key-activation.entity';
 import { LicenseKey } from 'src/entities/license-key.entity';
@@ -148,5 +149,52 @@ export class LicenseKeyService {
     });
 
     return licenseKey.key;
+  }
+
+  async listLicenseKey(listLicenseKeyDto: ListLicenseKeyDto) {
+    const builder = await this.licenseKeyRepository.createQueryBuilder();
+
+    if (listLicenseKeyDto.is_activation === true) {
+      builder.where('activated_at IS NOT NULL');
+    } else if (listLicenseKeyDto.is_activation === false) {
+      builder.where('activated_at IS NULL');
+    }
+
+    builder
+      .take(listLicenseKeyDto.limit)
+      .skip((listLicenseKeyDto.page - 1) * listLicenseKeyDto.limit);
+
+    const [result, total] = await builder.getManyAndCount();
+    const now = moment();
+
+    const data = result.map((item) => {
+      const expiredAt = item.activated_at
+        ? moment(item.activated_at).add(item.ttl, 'days')
+        : null;
+
+      let days = null,
+        hours = null;
+
+      if (expiredAt && expiredAt.isAfter(now)) {
+        days = expiredAt.diff(now, 'days');
+        hours = expiredAt.subtract(days, 'days').diff(now, 'hours');
+      }
+
+      return {
+        ...item,
+        expired_at: expiredAt,
+        expired_after: {
+          days,
+          hours,
+        },
+      };
+    });
+
+    return {
+      data,
+      total,
+      page: listLicenseKeyDto.page,
+      limit: listLicenseKeyDto.limit,
+    };
   }
 }
